@@ -11,6 +11,7 @@ import time
 from functools import partial
 from typing import Any, Optional, Union
 from warnings import warn
+from datetime import timedelta
 
 import torch
 from omegaconf import DictConfig, ListConfig
@@ -148,7 +149,7 @@ class FullFinetuneRecipeDistributed(FTRecipeInterface):
             offload_ops_to_cpu=self.fsdp_cpu_offload
             or self._enable_async_checkpointing,
         )
-        init_process_group(self.distributed_backend)
+        init_process_group(self.distributed_backend, timeout=timedelta(seconds=6000))
 
         # Initialize distributed variables
         self.world_size, self.rank = utils.get_world_size_and_rank()
