@@ -512,6 +512,12 @@ class FullFinetuneRecipeDistributed(FTRecipeInterface):
             # Standard case: use the single optimizer
             optimizer = self._optimizer
 
+        if cfg_lr_scheduler.get("num_warmup_steps", None) is not None:
+            num_warmup_steps = cfg_lr_scheduler["num_warmup_steps"]
+            if isinstance(num_warmup_steps, float) and (0.0 < num_warmup_steps < 1.0):
+                num_warmup_steps = int(num_warmup_steps * num_training_steps)
+            cfg_lr_scheduler["num_warmup_steps"] = num_warmup_steps
+        
         # Instantiate the learning rate scheduler
         lr_scheduler = config.instantiate(
             cfg_lr_scheduler,
