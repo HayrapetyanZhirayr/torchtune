@@ -152,7 +152,7 @@ class InferenceRecipe:
                 temperature=cfg.temperature,
                 top_k=cfg.top_k,
                 stop_tokens=self._tokenizer.stop_tokens,
-                custom_generate_next_token=custom_generate_next_token,
+                # custom_generate_next_token=custom_generate_next_token,
             )
             t = time.perf_counter() - t0
             logger.info(f"Warmup run for quantized model takes: {t:.02f} sec")
@@ -167,7 +167,7 @@ class InferenceRecipe:
             temperature=cfg.temperature,
             top_k=cfg.top_k,
             stop_tokens=self._tokenizer.stop_tokens,
-            custom_generate_next_token=custom_generate_next_token,
+            # custom_generate_next_token=custom_generate_next_token,
         )
         generated_tokens = generated_tokens.tolist()
         t = time.perf_counter() - t0
