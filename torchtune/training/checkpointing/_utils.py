@@ -602,7 +602,8 @@ def get_model_checkpoint_path(
 
     # Case 2: Loading the recipe state, but its full finetuning (no adapter)
     elif not has_adapter_checkpoint:
-        input_dir = output_dir
+        # input_dir = output_dir
+        input_dir = checkpoint_dir
 
     # Case 3: Loading the recipe state and has an adapter.
     else:
