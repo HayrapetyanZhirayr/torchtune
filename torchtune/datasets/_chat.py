@@ -183,5 +183,5 @@ def chat_dataset(
             raise ValueError(
                 "PackedDataset requires a max_seq_len to be set on the tokenizer."
             )
-        return PackedDataset(ds, max_seq_len=tokenizer.max_seq_len)
+        return PackedDataset(ds, max_seq_len=tokenizer.max_seq_len, padding_idx=tokenizer.pad_token_id)
     return ds
