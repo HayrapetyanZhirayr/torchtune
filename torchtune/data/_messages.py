@@ -657,7 +657,7 @@ class OpenAIToMessages(Transform):
                 stacklevel=2,
             )
             masking_strategy = (
-                "train_on_all" if train_on_input else "train_on_assistant"
+                "train_on_all" if train_on_input else "train_on_last"
             )
         self.masking_strategy = masking_strategy
         self.new_system_prompt = new_system_prompt
