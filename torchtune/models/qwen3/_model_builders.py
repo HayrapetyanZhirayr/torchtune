@@ -8,7 +8,6 @@ from typing import List, Optional
 from torchtune.data._prompt_templates import _get_prompt_template, _TemplateType
 
 from torchtune.models.qwen3._component_builders import lora_qwen3, qwen3
-
 from torchtune.models.qwen3._tokenizer import QWEN3_SPECIAL_TOKENS, Qwen3Tokenizer
 from torchtune.modules import TransformerDecoder
 from torchtune.modules.peft import LORA_ATTN_MODULES
