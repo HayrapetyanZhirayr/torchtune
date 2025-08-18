@@ -21,6 +21,7 @@ from torch.distributed import destroy_process_group, init_process_group
 from torch.distributed.tensor import DTensor
 from torch.distributed.tensor.parallel import parallelize_module
 from torch.optim import Optimizer
+
 from torchao.float8 import precompute_float8_dynamic_scale_for_fsdp
 from torchdata.stateful_dataloader import StatefulDataLoader
 from torchdata.stateful_dataloader.sampler import StatefulDistributedSampler
@@ -1173,4 +1174,5 @@ def recipe_main(cfg: DictConfig) -> None:
 
 
 if __name__ == "__main__":
-    sys.exit(recipe_main())
+    recipe_main()
+
