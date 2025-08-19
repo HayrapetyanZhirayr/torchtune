@@ -833,6 +833,8 @@ class FullModelHFCheckpointer(_CheckpointerInterface):
                 split_state_dicts: dict[str, dict[str, torch.Tensor]] = {}
                 total_size = 0
                 for key, weight in state_dict[training.MODEL_KEY].items():
+                    if key == "lm_head.weight" and key not in self._weight_map:
+                        self._weight_map[key] = self._weight_map["model.embed_tokens.weight"]
                     cpt_idx = self._weight_map[key]
 
                     # initialize dict
