@@ -1010,8 +1010,8 @@ class FullFinetuneRecipeDistributed(FTRecipeInterface):
                     ):
                         time_per_step = time.perf_counter() - t0
                         log_dict = {
-                            "loss": loss_to_log,
-                            "lr": get_lr(
+                            "train/loss": loss_to_log,
+                            "train/learning_rate": get_lr(
                                 (
                                     self._optimizer
                                     if not self._optimizer_in_bwd
@@ -1028,7 +1028,7 @@ class FullFinetuneRecipeDistributed(FTRecipeInterface):
                                 training.get_memory_stats(device=self._device)
                             )
                         if self._clip_grad_norm is not None:
-                            log_dict.update({"grad_norm": grad_norm})
+                            log_dict.update({"train/grad_norm": grad_norm})
                         self._metric_logger.log_dict(
                             log_dict,
                             step=self.global_step,
