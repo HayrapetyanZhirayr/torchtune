@@ -42,6 +42,7 @@ class TrainingProgress:
     total_epochs: int
     max_steps_per_epoch: int
     dataloader_state_dict: Optional[dict[str, Any]] = None
+    global_step: Optional[int] = None
 
     def state_dict(self) -> dict[str, object]:
         return {
@@ -50,6 +51,7 @@ class TrainingProgress:
             training.TOTAL_EPOCHS_KEY: self.total_epochs,
             training.MAX_STEPS_KEY: self.max_steps_per_epoch,
             training.DATALOADER_KEY: self.dataloader_state_dict,
+            training.STEPS_KEY: self.global_step
         }
 
 
@@ -225,6 +227,7 @@ class CheckpointClient:
         resume_from_checkpoint flag set to True and recipe file paths set in the config.
         """
         intermediate_checkpoint = epoch + 1 < training_progress.total_epochs
+        global_step = training_progress.global_step
         checkpointer = self._get_checkpointer()
         is_not_distributed_checkpointer = not isinstance(
             checkpointer, DistributedCheckpointer
@@ -320,6 +323,7 @@ class CheckpointClient:
                 epoch=epoch,
                 intermediate_checkpoint=intermediate_checkpoint,
                 adapter_only=adapter_only,
+                step=global_step,
             )
 
             if self._is_rank_zero:

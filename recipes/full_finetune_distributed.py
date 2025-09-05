@@ -1084,6 +1084,7 @@ class FullFinetuneRecipeDistributed(FTRecipeInterface):
                     total_epochs=self.total_epochs,
                     max_steps_per_epoch=self.max_steps_per_epoch,
                     dataloader_state_dict=self._dataloader.state_dict(),
+                    global_step=self.global_step,
                 ),
                 epoch=curr_epoch,
             )
