@@ -135,6 +135,7 @@ class FullFinetuneRecipeDistributed(FTRecipeInterface):
         device_type = cfg.device
         self._device = utils.get_device(device=device_type)
         self._dtype = training.get_dtype(cfg.dtype, device=self._device)
+        self._save_every_n_steps = cfg.get("save_every_n_steps", None)
 
         if self._dtype == torch.float16:
             raise ValueError(
@@ -983,6 +984,26 @@ class FullFinetuneRecipeDistributed(FTRecipeInterface):
                     # Update the number of steps when the weights are updated
                     self.global_step += 1
 
+                    if self._save_every_n_steps is not None:
+                        if self.global_step % self._save_every_n_steps == 0:
+                            self._checkpoint_client.save_checkpoint(
+                                model=self._model,
+                                optimizer=(
+                                    self._optimizer
+                                    if not self._optimizer_in_bwd
+                                    else self._optim_ckpt_wrapper
+                                ),
+                                training_progress=TrainingProgress(
+                                    seed=self.seed,
+                                    epochs_run=self.epochs_run,
+                                    total_epochs=self.total_epochs,
+                                    max_steps_per_epoch=self.max_steps_per_epoch,
+                                    dataloader_state_dict=self._dataloader.state_dict(),
+                                    global_step=self.global_step,
+                                ),
+                                epoch=curr_epoch,
+                            )
+
                     # Step the learning rate scheduler
                     if self._lr_scheduler is not None:
                         self._lr_scheduler.step()
@@ -1071,23 +1092,24 @@ class FullFinetuneRecipeDistributed(FTRecipeInterface):
                     break
 
             self.epochs_run += 1
-            self._checkpoint_client.save_checkpoint(
-                model=self._model,
-                optimizer=(
-                    self._optimizer
-                    if not self._optimizer_in_bwd
-                    else self._optim_ckpt_wrapper
-                ),
-                training_progress=TrainingProgress(
-                    seed=self.seed,
-                    epochs_run=self.epochs_run,
-                    total_epochs=self.total_epochs,
-                    max_steps_per_epoch=self.max_steps_per_epoch,
-                    dataloader_state_dict=self._dataloader.state_dict(),
-                    global_step=self.global_step,
-                ),
-                epoch=curr_epoch,
-            )
+            if (self._save_every_n_steps is None) or (self.global_step % self._save_every_n_steps != 0):
+                self._checkpoint_client.save_checkpoint(
+                    model=self._model,
+                    optimizer=(
+                        self._optimizer
+                        if not self._optimizer_in_bwd
+                        else self._optim_ckpt_wrapper
+                    ),
+                    training_progress=TrainingProgress(
+                        seed=self.seed,
+                        epochs_run=self.epochs_run,
+                        total_epochs=self.total_epochs,
+                        max_steps_per_epoch=self.max_steps_per_epoch,
+                        dataloader_state_dict=self._dataloader.state_dict(),
+                        global_step=self.global_step,
+                    ),
+                    epoch=curr_epoch,
+                )
 
         self._profiler.stop()
 
